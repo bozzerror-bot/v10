@@ -43,7 +43,7 @@ export default function Chart() {
     setLoading(false);
   }, [symbol, interval]);
 
-  useEffect(() => { loadData(); const iv = setInterval(loadData, 10000); return () => clearInterval(iv); }, [loadData]);
+  useEffect(() => { loadData(); const iv = window.setInterval(() => { loadData(); }, 10000); return () => window.clearInterval(iv); }, [loadData]);
 
   return (
     <div className="min-h-screen bg-[#050507] text-[#e2e8f0] p-4 md:p-6 max-w-6xl mx-auto space-y-4">

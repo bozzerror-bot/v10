@@ -48,6 +48,11 @@ export interface CoinStrategyProfile {
   symbol: string; bestStrategy: string; bestWinRate: number;
   optimalTP: number; optimalSL: number; avgVolatility: number; lastUpdated: number;
 }
+export interface Notification {
+  id: string; time: string; type: 'entry' | 'exit' | 'signal' | 'refresh' | 'warning';
+  title: string; message: string; read: boolean;
+}
+
 export interface AlexSettings {
   name: string; riskTolerance: number; confidence: number; patience: number;
   adaptability: number; maxLeverage: number; selectedCoins: string[];
@@ -66,6 +71,7 @@ interface AlexState {
   backtestProgress: number; coinProfiles: Record<string, CoinStrategyProfile>;
   strategyWeights: Record<string, number>; lastRefreshTime: number;
   settings: AlexSettings;
+  notifications: Notification[];
 }
 
 interface AlexActions {
@@ -85,6 +91,9 @@ interface AlexActions {
   setCoinProfiles: (p: Record<string, CoinStrategyProfile>) => void;
   updateStrategyWeights: (w: Record<string, number>) => void;
   setLastRefreshTime: (t: number) => void;
+  addNotification: (n: Notification) => void;
+  markNotificationRead: (id: string) => void;
+  clearNotifications: () => void;
 }
 
 const defSettings: AlexSettings = {
@@ -102,7 +111,7 @@ export const useAlexStore = create<AlexState & AlexActions>()(
     marketStudyProgress: 0, marketStudyData: {}, backtestResults: {},
     backtestComplete: false, backtestProgress: 0, coinProfiles: {},
     strategyWeights: { BOS: 1, CHoCH: 1, TREND: 1, SCALP: 1, FVG: 1, DIVERGENCE: 1 },
-    lastRefreshTime: 0, settings: defSettings,
+    lastRefreshTime: 0, settings: defSettings, notifications: [],
 
     setCoins: (coins) => set((s) => { s.coins = coins; }),
     updatePrice: (symbol, price) => set((s) => {
@@ -187,6 +196,9 @@ export const useAlexStore = create<AlexState & AlexActions>()(
     setCoinProfiles: (p) => set((s) => { s.coinProfiles = p; }),
     updateStrategyWeights: (w) => set((s) => { Object.assign(s.strategyWeights, w); }),
     setLastRefreshTime: (t) => set((s) => { s.lastRefreshTime = t; }),
+    addNotification: (n) => set((s) => { s.notifications.unshift(n); if (s.notifications.length > 100) s.notifications = s.notifications.slice(0, 100); }),
+    markNotificationRead: (id) => set((s) => { const n = s.notifications.find(x => x.id === id); if (n) n.read = true; }),
+    clearNotifications: () => set((s) => { s.notifications = []; }),
   }), { name: 'alex-v10', partialize: (s) => ({
     cycle: s.cycle, positions: s.positions, trades: s.trades, reasoning: s.reasoning,
     pnlHistory: s.pnlHistory, mood: s.mood, stressLevel: s.stressLevel, streak: s.streak,
@@ -195,6 +207,6 @@ export const useAlexStore = create<AlexState & AlexActions>()(
     marketStudyData: s.marketStudyData, backtestResults: s.backtestResults,
     backtestComplete: s.backtestComplete, backtestProgress: s.backtestProgress,
     coinProfiles: s.coinProfiles, strategyWeights: s.strategyWeights,
-    lastRefreshTime: s.lastRefreshTime, settings: s.settings,
+    lastRefreshTime: s.lastRefreshTime, settings: s.settings, notifications: s.notifications,
   })}))
 );

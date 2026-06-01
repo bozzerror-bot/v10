@@ -42,7 +42,7 @@ export default function Navbar() {
                   key={item.to}
                   to={item.to}
                   end={item.end}
-                  className={({ isActive }) =>
+                  className={({ isActive }: { isActive: boolean }) =>
                     `relative flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-colors ${
                       isActive
                         ? 'bg-primary/10 text-primary'

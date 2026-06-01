@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useAlexStore } from '../store/useAlexStore';
+import { useAlexStore, COINS } from '../store/useAlexStore';
 
 const KLINES_URL = 'https://api.binance.com/api/v3/klines';
 

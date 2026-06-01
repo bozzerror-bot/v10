@@ -7,7 +7,7 @@ const REST_URL = 'https://api.binance.com/api/v3/ticker/24hr';
 export function useBinancePrices() {
   const [connected, setConnected] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
-  const retryRef = useRef<NodeJS.Timeout | null>(null);
+  const retryRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const coinsRef = useRef(useAlexStore.getState().coins.map(c => c.symbol));
 
   useEffect(() => {
